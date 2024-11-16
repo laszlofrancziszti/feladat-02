@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liftutak Optimalizálása - Dokumentáció</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #333366;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-top: 1em;
+            border-bottom: 2px solid #333366;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.2em;
+            margin-top: 1em;
+        }
+        p {
+            margin: 10px 0;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #333;
+        }
+        pre {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #333366;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+        .example {
+            background-color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Liftutak Optimalizálása - Dokumentáció</h1>
+
+<h2>1. Bevezetés</h2>
+<p>A feladat célja megtalálni a minimális számú liftutat, amely egy adott számú személyt egy épület tetejére juttat, ahol a lift maximális terhelhetősége ismert.
+A bemenetként megadott személyek súlya alapján a cél az, hogy a lehető legkevesebb úttal oldjuk meg a szállítást.</p>
+
+<h2>2. Algoritmus Magyarázata</h2>
+<p>Ez a megoldás dinamikus programozási megközelítést alkalmaz bitmasking használatával. Minden lehetséges állapotot egy maszk képvisel, amely megmutatja, hogy kik vannak már a liftben.
+Az algoritmus kiszámítja az egyes kombinációk minimális liftútjait, és egy olyan megoldást talál, amely minimalizálja az utak számát.</p>
+
+<h3>Részletes lépések:</h3>
+<ol>
+    <li>Kezdjük egy <code>dp</code> tömbbel, amely az egyes maszkokhoz szükséges utak számát tárolja.</li>
+    <li>Ha egy új személyt adunk a lifthez, ellenőrizzük, hogy a súlya belefér-e a maximális súlykorlátba.</li>
+    <li>Ha nem, új utat kell kezdeni, és a személyt arra az útra helyezzük.</li>
+</ol>
+
+<h2>3. Kódrészletek</h2>
+<pre><code>def min_elevator_rides(n, x, weights):
+    dp = [(n + 1, 0)] * (1 << n)  # (szükséges utak, utolsó út súlya)
+    dp[0] = (1, 0)
+
+    for mask in range(1 << n):
+        for i in range(n):
+            if mask & (1 << i) == 0:
+                new_mask = mask | (1 << i)
+                rides, last_weight = dp[mask]
+                if last_weight + weights[i] <= x:
+                    new_rides = (rides, last_weight + weights[i])
+                else:
+                    new_rides = (rides + 1, weights[i])
+                dp[new_mask] = min(dp[new_mask], new_rides)
+
+    return dp[(1 << n) - 1][0]</code></pre>
+
+<h2>4. Példák és Magyarázatok</h2>
+<div class="example">
+    <p><strong>Bemenet:</strong> <code>n = 4, x = 10, súlyok = [4, 8, 6, 1]</code></p>
+    <p><strong>Kimenet:</strong> 2</p>
+    <p><strong>Magyarázat:</strong> Az 1 és 8 kg súlyú személyek mehetnek együtt, a 4 és 6 kg pedig külön úton.</p>
+</div>
+
+<h2>5. Tesztelés</h2>
+<p>Több tesztet is elvégeztünk különböző bemeneti értékekkel, amelyeket az előző kódblokkban találhatók. A tesztek célja az, hogy megerősítsék az algoritmus helyességét és hatékonyságát.</p>
+
+</body>
+</html>
